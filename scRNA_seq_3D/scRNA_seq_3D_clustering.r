@@ -2,7 +2,7 @@ library(Seurat)
 library(dplyr)
 source("../../axolotl_AER_final/0.scripts/cell_cycle_removal.r")
 
-setwd("/work/gr-aztekin/3.project/culture_AER_final/Fig3")
+setwd("/work/gr-aztekin/3.project/culture_AER_final/scRNA_seq_3D")
 seu1 <- readRDS("../1.data/processed/batch1.rds")
 seu2 <- readRDS("../1.data/processed/batch2.rds")
 seu31 <- readRDS("../1.data/processed/batch3_d9.rds")
@@ -40,65 +40,6 @@ DefaultAssay(combined) <- "integrated"
 combined <- FindSubCluster(combined, cluster = 0, resolution = 0.3, graph.name = "integrated_snn", subcluster.name = "C0_sub")
 combined <- FindSubCluster(combined, cluster = 1, resolution = 0.3, graph.name = "integrated_snn", subcluster.name = "C1_sub")
 combined <- FindSubCluster(combined, cluster = 6, resolution = 0.3, graph.name = "integrated_snn", subcluster.name = "C6_sub")
-
-
-# meta <- readRDS("../Fig1/metadata.rds")
-# meta <- subset(meta, orig.ident == "day7")
-# rownames(meta) <- paste(rownames(meta), gsub("Rep", "", meta$batch), sep = "_")
-# all(rownames(meta) %in% rownames(combined@meta.data))
-
-# cells1 <- rownames(meta)[meta$celltype == "Surface Ectoderm 1"]
-# cells2 <- rownames(meta)[meta$celltype == "Surface Ectoderm 2"]
-# cells3 <- rownames(meta)[meta$celltype == "AER-like"]
-# cells4 <- rownames(meta)[meta$celltype == "Mesodermal"]
-
-# pdf("clustering150.pdf", width = 8, height = 8)
-# DimPlot(combined, label = TRUE, group.by = "batch")
-# DimPlot(combined, label = TRUE, group.by = "Phase")
-# DimPlot(combined, label = TRUE, group.by = "orig.ident")
-# DimPlot(combined, label = TRUE)
-
-# DimPlot(combined, label = TRUE, cells.highlight = cells1)
-# DimPlot(combined, label = TRUE, cells.highlight = cells2)
-# DimPlot(combined, label = TRUE, cells.highlight = cells3)
-# DimPlot(combined, label = TRUE, cells.highlight = cells4)
-
-# DimPlot(combined, label = TRUE, group.by = "C0_sub")
-# DimPlot(combined, label = TRUE, group.by = "C1_sub")
-# DimPlot(combined, label = TRUE, group.by = "C6_sub")
-
-# DimPlot(combined, label = TRUE, group.by = "celltype")
-
-# FeaturePlot(combined, c("Fgf8", "Prrx1"), order = T)
-# FeaturePlot(combined, c("Hoxa13", "Hoxd13"), order = T)
-# FeaturePlot(combined, c("nFeature_RNA"), order = T)
-# dev.off()
-
-
-
-# DefaultAssay(combined) <- "RNA"
-# pdf("marker.pdf")
-# FeaturePlot(combined, c("Fgf8", "Epcam", "Trp63", "Krtdap"), order = T, label = T)
-# FeaturePlot(combined, c("Krt14", "Krt5"), order = T, label = T)
-# FeaturePlot(combined, c("Krt1", "Krt10"), order = T, label = T)
-# FeaturePlot(combined, c("Krt8", "Krt18"), order = T, label = T)
-
-# FeaturePlot(combined, c("Prrx1", "Sox9", "Twist2", "Hoxd13"), order = T)
-# FeaturePlot(combined, c("Hoxb9", "Hoxd13"), order = T)
-# FeaturePlot(combined, c("Sox9", "Col2a1", "Col9a1"), order = T)
-
-# FeaturePlot(combined, c("Nanog", "Sox2"), order = T)
-# FeaturePlot(combined, "Sox17", order = T) # endoderm
-# FeaturePlot(combined, c("Ttr", "Otx2", "Bmp7"), order = T) # choroid plexus
-# FeaturePlot(combined, c("Sox2", "Pax6"), order = T) # neuralectoderm
-# FeaturePlot(combined, c("Sox10", "Pax3"), order = T) # neural crest
-# FeaturePlot(combined, c("Neurod1", "Tubb3"), order = T) # neuron
-# dev.off()
-
-# mar <- FindAllMarkers(combined, only.pos = T)
-# mar <- subset(mar, p_val_adj < 0.05)
-# write.csv(mar, file = "findallmarker.csv")
-
 
 # cell type annotation
 combined$celltype <- as.character(combined$seurat_clusters)

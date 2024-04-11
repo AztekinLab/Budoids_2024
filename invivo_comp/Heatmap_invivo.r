@@ -7,8 +7,8 @@ library(ComplexHeatmap)
 library(circlize)
 library(viridis)
 
-setwd("/work/gr-aztekin/3.project/culture_AER_final/FigS4_and_S5")
-combined <- readRDS("../Fig1/mESC_2D.rds")
+setwd("/work/gr-aztekin/3.project/culture_AER_final/invivo_comp")
+combined <- readRDS("../scRNA_seq_2D/mESC_2D.rds")
 DefaultAssay(combined) <- "RNA"
 Idents(combined) <- "celltype"
 
@@ -110,7 +110,7 @@ heat <- Heatmap(mes_mat,
     use_raster = F
 )
 
-pdf("mes_markers.pdf", width = 10, height = 6)
+pdf("FigS3D_mes_markers.pdf", width = 10, height = 6)
 heat
 dev.off()
 
@@ -158,64 +158,6 @@ heat_a <- Heatmap(aer_mat,
     use_raster = F
 )
 
-pdf("AER_markers.pdf", width = 10, height = 5)
+pdf("FigS3A_AER_markers.pdf", width = 10, height = 5)
 heat_a
-dev.off()
-
-
-## ================= MetaNeighbor ==========
-library(MetaNeighbor)
-library(SummarizedExperiment)
-source("./pl_helper.r")
-
-# AER, Mes
-seu_sub <- merge(aer_vitro, list(aer_vivo, mes_vitro, mes_vivo))
-seu_sub$celltype[grepl("^AER", seu_sub$celltype)] <- "AER"
-seu_sub$celltype[grepl("^Mes|CT", seu_sub$celltype)] <- "Mesoderm"
-unique(seu_sub$celltype)
-
-se <- SummarizedExperiment(seu_sub@assays$RNA@counts, colData = seu_sub@meta.data)
-var_genes <- variableGenes(dat = se, exp_labels = se$orig.ident)
-length(var_genes)
-
-AUROC.scores <- MetaNeighborUS(
-    var_genes = var_genes, # 4082
-    dat = se,
-    study_id = se$orig.ident,
-    cell_type = se$celltype,
-    fast_version = T
-)
-# topHitsByStudy(AUROC.scores)
-
-write.csv(AUROC.scores, "MetaNeigbor_onlyd7_mes_ect.csv")
-
-pdf("MetaNeigbor_onlyd7_mes_ect_0.95.pdf")
-plot_AUROC_heatmap(AUROC.scores)
-dev.off()
-
-
-
-# AER, BE, Mes, Muscle
-seu_sub <- seu_sub <- merge(aer_vitro, list(aer_vivo, mes_vitro, mes_vivo, be_vivo, muscle_vivo))
-seu_sub$celltype[grepl("^AER", seu_sub$celltype)] <- "AER"
-seu_sub$celltype[grepl("^Mes|CT", seu_sub$celltype)] <- "Mesoderm"
-unique(seu_sub$celltype)
-
-se <- SummarizedExperiment(seu_sub@assays$RNA@counts, colData = seu_sub@meta.data)
-var_genes <- variableGenes(dat = se, exp_labels = se$orig.ident)
-
-
-AUROC.scores <- MetaNeighborUS(
-    var_genes = var_genes, # 4124
-    dat = se,
-    study_id = se$orig.ident,
-    cell_type = se$celltype,
-    fast_version = T
-)
-topHitsByStudy(AUROC.scores)
-
-write.csv(AUROC.scores, "MetaNeigbor_onlyd7_mes_ect_muscle.csv")
-
-pdf("MetaNeigbor_onlyd7_mes_ect_muscle_0.95.pdf")
-plot_AUROC_heatmap(AUROC.scores)
 dev.off()

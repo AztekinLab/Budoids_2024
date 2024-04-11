@@ -5,7 +5,7 @@ library(ggrastr)
 source("../../axolotl_AER_final/0.scripts/cell_type_composition.r")
 source("../../axolotl_AER_final/0.scripts/dotplot_fromTOM.r")
 
-setwd("/work/gr-aztekin/3.project/culture_AER_final/Fig3")
+setwd("/work/gr-aztekin/3.project/culture_AER_final/scRNA_seq_3D")
 combined <- readRDS("mESC_3D.rds")
 DefaultAssay(combined) <- "RNA"
 Idents(combined) <- "celltype"
@@ -33,21 +33,13 @@ batch_col <- c("#E41A1C", "#377EB8", "#4DAF4A")
 
 
 # final clustering UMAP
-DimPlot(combined, group.by = "celltype", cols = ct_col)
-ggsave("clustering_celltype2.pdf")
+p <- DimPlot(combined, group.by = "celltype", cols = ct_col)
+ggsave("Fig3B_clustering_celltype.pdf")
 
 
 # time and batch
 set.seed(1234)
-pdf("clustering_time.pdf", width = 9, height = 8)
-# DimPlot(combined,
-#     cols = time_col,
-#     group.by = "orig.ident", label = F, label.box = F,
-#     pt.size = 2, shuffle = TRUE,
-#     raster = T, raster.dpi = c(1024, 1024)
-# ) &
-#     theme(legend.position = c(.05, .3)) & labs(title = element_blank())
-
+pdf("FigS7D_clustering_time.pdf", width = 9, height = 8)
 DimPlot(combined,
     cols = time_col,
     group.by = "orig.ident", label = F, label.box = F,
@@ -58,24 +50,7 @@ DimPlot(combined,
 dev.off()
 
 
-pdf("clustering_batch.pdf", width = 24, height = 8)
-DimPlot(combined,
-    cols = batch_col,
-    group.by = "batch", split.by = "orig.ident", label = F, label.box = F,
-    pt.size = 2, raster = T, raster.dpi = c(1024, 1024), shuffle = TRUE
-) &
-    theme(legend.position = c(.05, .3)) & labs(title = element_blank())
-
-DimPlot(combined,
-    cols = batch_col,
-    group.by = "batch", split.by = "orig.ident", label = F, label.box = F,
-    pt.size = 0.1, shuffle = TRUE
-) &
-    theme(legend.position = c(.05, .3)) & labs(title = element_blank())
-dev.off()
-
-
-pdf("clustering_batch2.pdf", width = 9, height = 8)
+pdf("FigS7C_clustering_batch.pdf", width = 9, height = 8)
 DimPlot(combined,
     # cols = batch_col,
     group.by = "time_batch", label = F, label.box = F,
@@ -97,58 +72,8 @@ p1 <- composition_plot(combined@meta.data,
     group = time_batch, fill = celltype,
     colours = ct_col
 )
-
-p1
-ggsave("celltype_composition.pdf")
-
-
-df <- combined@meta.data
-df$need <- "Non-targeted"
-df$need[df$celltype %in% c("Surface Ectoderm 1", "Surface Ectoderm 2", "BasalEctoderm-like", "AER-like")] <- "Ectoderm"
-df$need[df$celltype %in% c("Mesodermal-like", "Mes_Hoxb", "Mes_Hox13", "Mes_Sox9", "Mes_Col2a1")] <- "Mesoderm"
-df$need <- factor(df$need, levels = c("Ectoderm", "Mesoderm", "Non-targeted"))
-
-df$need2 <- as.character(df$need)
-df$need2[df$celltype %in% c("Mesodermal-like", "Mes_Hoxb", "Mes_Hox13")] <- "Mesoderm(soft)"
-df$need2[df$celltype %in% c("Mes_Sox9", "Mes_Col2a1")] <- "Mesoderm(hard)"
-df$need2 <- factor(df$need2, levels = c("Ectoderm", "Mesoderm(soft)", "Mesoderm(hard)", "Non-targeted"))
-
-
-p2 <- composition_plot(
-    df = df,
-    group = time_batch,
-    fill = need, colours = c("#ffdaa9", "#6ba96b", "#757680")
-) &
-    theme(
-        panel.grid = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        plot.title = element_text(hjust = 0.5, face = "bold")
-    ) &
-    labs(title = "Cell type compositions")
-ggsave("celltype_composition_simplified.pdf", width = 6, height = 6)
-
-
-
-p3 <- composition_plot(
-    df = df,
-    group = time_batch,
-    fill = need2, colours = c("#ffdaa9", "#4f994f", "#046484", "#757680")
-) &
-    theme(
-        panel.grid = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        plot.title = element_text(hjust = 0.5, face = "bold")
-    ) &
-    labs(title = "Cell type compositions")
-ggsave("celltype_composition_simplified2.pdf", width = 6, height = 6)
-
-
-# freq <- table(combined$orig.ident, combined$celltype)
-# perc <- round(100 * freq / rowSums(freq), 2)
-# write.table(perc, "percent_celltype.txt", sep = "\t", quote = F)
-
+ggsave("FigS7B_celltype_composition.pdf")
+prop.table(table(combined$time_batch, combined$celltype), margin = 1) %>% write.csv('FigS7B_celltype_composition.csv', quote = F)
 
 
 # cell cycle percentage
@@ -163,10 +88,11 @@ p4 <- composition_plot(
     ) &
     labs(title = "Cell cycle phases across cell types")
 
-pdf("cell_cycle_composition.pdf", width = 9, height = 3)
+pdf("FigS7E_cell_cycle_composition.pdf", width = 9, height = 3)
 p4
 dev.off()
 
+prop.table(table(combined$celltype, combined$Phase), margin = 1) %>% write.csv('FigS7E_cell_cycle_composition.csv', quote = F)
 
 
 ## marker expression
@@ -187,12 +113,13 @@ p1 <- dotplot(combined@assays$RNA@data,
     norm = "max", condition = combined$celltype, title = "Cell type markers",
     collow = "lightgrey", colhigh = "red4",
     aspect.ratio = 4, ySize = 7, xSize = 7, dot.scale = 3,
-    plot = T, return = T
+    plot = F, return = T
 )
 
-pdf("marker_all.pdf", width = 4, height = 10)
+pdf("FigS7F_marker_all.pdf", width = 4, height = 10)
 p1
 dev.off()
+
 
 # selected genes
 # Msx1, Grem1, Fgf10
@@ -268,7 +195,7 @@ p5 <- lapply(p5, function(p) {
 
 
 
-pdf("marker_selected.pdf", width = 20, height = 12)
+pdf("FigS3CDE_marker_selected.pdf", width = 20, height = 12)
 wrap_plots(p1, ncol = 3)
 wrap_plots(p1.1, ncol = 3)
 wrap_plots(p2, ncol = 3)
@@ -279,10 +206,7 @@ dev.off()
 
 
 # hox sequential activation
-pdf("hox_exp_sequential.pdf", width = 8, height = 6)
-# VlnPlot(subset(combined, subset = celltype %in% c("Mes_Hoxb")), features = hox, split.by = "orig.ident", pt.size = 0.1, col = time_col) +
-#     theme(legend.position = "right")
-
+pdf("Fig3G_hox_exp_sequential.pdf", width = 8, height = 6)
 VlnPlot(subset(combined, subset = celltype %in% c("Mes_Hox13")), features = hox, split.by = "orig.ident", pt.size = 0.1, col = time_col) +
     theme(legend.position = "right")
 dev.off()
@@ -338,7 +262,7 @@ BBBC
 BBBC
 BBBC"
 p_all <- wrap_plots(list(xdensity, rasterize(p, layers = "Point", dpi = 600), ydensity, guide_area()), design = design, guides = "collect")
-ggsave("coexpr_pitx1.pdf", width = 4, height = 4)
+ggsave("FigS8B_coexpr_pitx1.pdf", width = 4, height = 4)
 
 
 
@@ -362,4 +286,4 @@ ydensity1 <- ggplot(df, aes(Tbx4, stage, fill = stage)) +
     coord_flip()
 
 p_all <- wrap_plots(list(xdensity, rasterize(p1, layers = "Point", dpi = 600), ydensity1, guide_area()), design = design, guides = "collect")
-ggsave("coexpr_tbx4.pdf", width = 4, height = 4)
+ggsave("FigS8B_coexpr_tbx4.pdf", width = 4, height = 4)

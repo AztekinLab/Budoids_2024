@@ -1,7 +1,7 @@
 library(Seurat)
 library(dplyr)
 
-setwd("/work/gr-aztekin/3.project/culture_AER_final/Fig1")
+setwd("/work/gr-aztekin/3.project/culture_AER_final/scRNA_seq_2D")
 seu1 <- readRDS("../1.data/batch1.rds")
 seu2 <- readRDS("../1.data/batch2.rds")
 seu2 <- subset(seu2, orig.ident != "day12")
@@ -31,20 +31,6 @@ combined <- combined %>%
 
 
 combined <- FindSubCluster(combined, cluster = 6, resolution = 0.3, graph.name = "integrated_snn")
-
-# pdf("clustering.pdf", width = 8, height = 8)
-# # DimPlot(combined, label = TRUE, group.by = "batch")
-# # DimPlot(combined, label = TRUE, group.by = "Phase")
-# # DimPlot(combined, label = TRUE, group.by = "orig.ident")
-# DimPlot(combined, label = TRUE)
-# # # DimPlot(combined, label = TRUE, cells.highlight = WhichCells(combined, expression = orig.ident == "day0"))
-# # # DimPlot(combined, label = TRUE, cells.highlight = WhichCells(combined, expression = orig.ident == "day3"))
-# DimPlot(combined, label = TRUE, group.by = "sub.cluster")
-# # FeaturePlot(combined, c("Fgf8", "Prrx1"), order = T)
-# # FeaturePlot(combined, c("Sox3", "Neurod1"), order = T)
-# FeaturePlot(combined, c("Meox1", "Phox2b", "Tbx1", "Lhx2"), order = T)
-# FeaturePlot(combined, c("Prrx1", "Meis1", "Msx1"), order = T)
-# dev.off()
 
 
 # Cell Type annotation
