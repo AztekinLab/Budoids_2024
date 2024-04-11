@@ -3,17 +3,10 @@ mpl.rcParams['pdf.fonttype'] = 42 # for editable text in AI
 
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-import seaborn as sns
 
-import numpy as np
 import pandas as pd
 import scanpy as sc
 
-import glob
-import os, sys
-
-
-from patsy import dmatrix
 import statsmodels.api as sm
 
 
@@ -22,18 +15,18 @@ with open('hybiss_h5ad.pkl', "rb") as fn:
     adata_list_all =  pickle.load(fn)
 
 
-adata_list = []
+adata_list, adata_list2 = [], []
 for adata in adata_list_all:
     if adata.obs['loc'][0] != 'A':
-        del adata.obsm
         adata_list.append(adata)
+        del adata.obsm
+        sc.pp.filter_genes(adata, min_cells = 0.01 * adata.n_obs)
+        adata_list2.append(adata)
 print(len(adata_list))
 # 41
 
 
-g2c = {'meso9':'#015492', 'mesoAER':'#8E0068','mesoSE':'#FF9300','':'lightgrey'}
-
-
+g2c = {'meso9':'#015492', 'mesoAER':'#8E0068','mesoSE':'#FF9300'}
 genes = ['Msx1', 'Fgf10', 'Wnt5a', 'Axin2', 'Bmp4', 'Id2', 'Id3', 'Gli3']
 
 fig, axes = plt.subplots(2, 4, figsize = (12, 5))
@@ -57,14 +50,15 @@ for i, g in enumerate(genes):
 
         X = sm.add_constant(X)
         model = sm.ZeroInflatedPoisson(y, X).fit()
-
+        # model = sm.GLM(y, X, family=sm.families.Poisson()).fit()
 
         idx = X.duplicated()
         a = X[~idx]
-        a['pred'] = model.predict(a)
+        a = X
+        a['pred'] = model.predict(X)
         summary = model.get_prediction().summary_frame()
         summary.index = X.index
-        plot_df = pd.concat([a, summary[~idx]], axis =1)
+        plot_df = pd.concat([a, summary], axis =1)
         plot_df = plot_df.sort_values('major_coor_used')
 
 
@@ -85,4 +79,4 @@ legend_elements = [
 
 plt.legend(handles = legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', frameon = False)
 plt.tight_layout()
-plt.savefig('FigS14B_lineplot.pdf', transparent=True)
+plt.savefig('FigS14B_lineplot3.pdf', transparent=True)
