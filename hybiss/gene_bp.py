@@ -8,10 +8,6 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 
-
-import glob
-import os
-
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

@@ -3,9 +3,9 @@ library(RColorBrewer)
 library(patchwork)
 library(ggplot2)
 
-setwd('/work/gr-aztekin/3.project/culture_AER_final/scRNA_seq_2D')
-source("../../axolotl_AER_final/0.scripts/dotplot_fromTOM.r")
-source("../../axolotl_AER_final/0.scripts/cell_type_composition.r")
+setwd('scRNA_seq_2D')
+source("../0.scripts/dotplot_fromTOM.r")
+source("../0.scripts/cell_type_composition.r")
 
 combined <- readRDS("mESC_2D.rds")
 DefaultAssay(combined) <- "RNA"

@@ -2,10 +2,7 @@ import matplotlib as mpl
 mpl.rcParams['pdf.fonttype'] = 42 # for editable text in AI
 
 import scanpy as sc
-import os, glob
 import pandas as pd
-import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 import pickle
@@ -35,8 +32,8 @@ adata_P = adata[adata.obs['loc'] == 'P']
 adata_D = adata[adata.obs['loc'] == 'D']
 
 
-
-genelist = pd.read_table('genelist_mm_short.txt')
+# get gene categories
+genelist = pd.read_table('hybiss_genes.txt')
 genelist['Genes'] = [genelist['Genes'][i].split(',') for i in genelist.index]
 genelist = genelist.explode(['Genes'], ignore_index = True)
 

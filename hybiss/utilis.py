@@ -1,13 +1,9 @@
 import numpy as np
 import pandas as pd
 
-import seaborn as sns
-from adjustText import adjust_text
-
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.manifold import MDS
 
 
 def grouped_obs_single(adata, groupby, method = 'sum', layer=None, use_raw = False):
