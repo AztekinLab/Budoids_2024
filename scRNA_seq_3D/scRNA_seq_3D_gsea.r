@@ -15,7 +15,7 @@ aer <- subset(combined, idents = aer_cluster)
 mes <- subset(combined, idents = mes_cluster)
 
 ## get genes
-genelist <- read.csv( 'genelist_gsea.csv')
+genelist <- read.csv('genelist_gsea.csv')
 aer_list <- na.omit(genelist$AER)
 chon_list <- na.omit(genelist$Chondrocyte)
 fibro_list <- na.omit(genelist$Fibroblast)
