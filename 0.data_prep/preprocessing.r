@@ -1,7 +1,7 @@
 library(Seurat)
 library(dplyr)
 
-# get all mat
+# TO DO: change path!!
 file_list1 <- Sys.glob("./batch1/*/count/sample_filtered_feature_bc_matrix")
 file_list2 <- Sys.glob("./batch2/*/count/sample_filtered_feature_bc_matrix")
 file_list3 <- Sys.glob("./Day*/outs/filtered_feature_bc_matrix")

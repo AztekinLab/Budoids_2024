@@ -6,7 +6,6 @@ import matplotlib.lines as mlines
 
 import pandas as pd
 import scanpy as sc
-
 import statsmodels.api as sm
 
 import pickle
@@ -35,7 +34,7 @@ for i, g in enumerate(genes):
 
     for test in adata_list:
         if g in test.var_names:
-            plotdf = sc.get.obs_df(test, keys=[g, 'major_coor_used','cond','sample'], use_raw = True)
+            plotdf = sc.get.obs_df(test, keys=[g, 'major_coor_used','cond','sample'], use_raw = False)
             df_list.append(plotdf)
 
     df = pd.concat(df_list)
@@ -78,4 +77,4 @@ legend_elements = [
 
 plt.legend(handles = legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', frameon = False)
 plt.tight_layout()
-plt.savefig('FigS14B_lineplot3.pdf', transparent=True)
+plt.savefig('FigS14B_lineplot.pdf', transparent=True)
